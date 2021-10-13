@@ -118,12 +118,25 @@ def get_heart_rate():
 def heart_logger(data):
     print ('Realtime heart BPM:', data)
 
+def gyro_logger(data):
+    for gyro_data in data:
+        print (
+            'Realtime gyro: X: {}, Y: {}, Z: {}'.format(
+                                                        gyro_data['gyro_raw_x'],
+                                                        gyro_data['gyro_raw_y'],
+                                                        gyro_data['gyro_raw_z']
+                                                        )
+            )
 
 # Needs Auth
 def get_realtime():
     band.start_heart_rate_realtime(heart_measure_callback=heart_logger)
     input('Press Enter to continue')
 
+
+def get_gyro_realtime():
+    band.start_gyro_realtime(callback=gyro_logger, sensitivity=1, avg=False)
+    input('Press Enter to continue')
 
 # Needs Auth
 def restore_firmware():
@@ -217,6 +230,11 @@ def get_activity_logs():
     while True:
         band.waitForNotifications(0.2)
 
+
+def rolling_vibration():
+    band.vibrate_rolling(5)
+
+
 if __name__ == "__main__":
     success = False
     while not success:
@@ -244,20 +262,24 @@ if __name__ == "__main__":
     steps_item = FunctionItem("@ Get Steps/Meters/Calories/Fat Burned", get_step_count)
     single_heart_rate_item = FunctionItem("@ Get Heart Rate", get_heart_rate)
     real_time_heart_rate_item = FunctionItem("@ Get realtime heart rate data", get_realtime)
+    real_time_gyro_item = FunctionItem("@ Get realtime gyro data", get_gyro_realtime)
     get_band_activity_data_item = FunctionItem("@ Get activity logs for a day", get_activity_logs)
     set_time_item= FunctionItem("@ Set the band's time to system time", set_time)
     update_watchface_item = FunctionItem("@ Update Watchface", update_watchface)
     dfu_update_item = FunctionItem("@ Restore/Update Firmware", restore_firmware)
+    vibrate_rolling_item = FunctionItem("@ Send rolling vibration", rolling_vibration)
     
     menu.append_item(info_item)
     menu.append_item(steps_item)
     menu.append_item(call_item)
     menu.append_item(single_heart_rate_item)
     menu.append_item(real_time_heart_rate_item)
+    menu.append_item(real_time_gyro_item)
     menu.append_item(get_band_activity_data_item)
     menu.append_item(set_time_item)
     menu.append_item(set_music_item)
     menu.append_item(lost_device_item)
     menu.append_item(update_watchface_item)
     menu.append_item(dfu_update_item)
+    menu.append_item(vibrate_rolling_item)
     menu.show()
